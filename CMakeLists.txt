@@ -1,8 +1,13 @@
-cmake_minimum_required(VERSION 3.16)
+set(CMAKE_MINIMUM_REQUIRED 3.16)
+
+cmake_minimum_required(VERSION ${CMAKE_MINIMUM_REQUIRED})
 
 project(raytracer)
 
-find_package(Catch2 REQUIRED)
+option(BUILD_TESTS "Build tests" OFF)
+if(BUILD_TESTS)
+    include(${CMAKE_SOURCE_DIR}/cmake/test.cmake)
+endif()
 
 set(RAYTRACER_BIN raytracer)
 include_directories(include)

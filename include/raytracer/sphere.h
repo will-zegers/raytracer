@@ -5,7 +5,6 @@
 
 class Sphere : public Hittable {
     public:
-        Sphere() {}
         Sphere(Point3 center, double r) : center_(center), radius_(r) {}
 
         virtual bool Hit(const Ray&, double, double, HitRecord&) const override;
@@ -37,7 +36,7 @@ bool Sphere::Hit(const Ray& r, double t_min, double t_max, HitRecord& rec) const
     }
 
     rec.t = root;
-    rec.p = r.at(rec.t);
+    rec.p = r.At(rec.t);
     Vec3 outward_normal = (rec.p - center_) / radius_;
     rec.SetFaceNormal(r, outward_normal);
 

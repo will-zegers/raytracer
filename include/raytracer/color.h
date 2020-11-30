@@ -6,12 +6,11 @@
 
 class Color {
     public:
-        Color() : e{0, 0, 0} {}
         Color(double r, double g, double b) : e{r, g, b} {}
 
-        double r() { return e[0]; }
-        double g() { return e[1]; }
-        double b() { return e[2]; }
+        double r() const { return e[0]; }
+        double g() const { return e[1]; }
+        double b() const { return e[2]; }
 
         friend inline Color operator+(const Color&, const Color&);
         friend inline Color operator+(const Color&, const Vec3&);
@@ -19,7 +18,7 @@ class Color {
         friend inline Color operator*(double, const Color&);
 
     private:
-        double e[3];
+        const double e[3];
 };
 
 void WriteColor(std::ostream &out, Color pixel_Color) {
