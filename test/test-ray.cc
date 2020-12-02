@@ -5,8 +5,8 @@
 #include "raytracer/test/util.h"
 
 TEST_CASE("test ray class" "[ray]") {
-    Point3 origin(0, 0, 0);
-    Vec3 direction = UnitVector({2, 8, 16});
+    Point3 origin(0.0, 0.0, 0.0);
+    Vec3 direction = UnitVector({2.0, 8.0, 16.0});
 
     Ray r(origin, direction);
 

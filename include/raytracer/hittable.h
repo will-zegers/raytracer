@@ -19,3 +19,12 @@ class Hittable {
     public: 
         virtual bool Hit(const Ray&, double, double, HitRecord&) const = 0;
 };
+
+inline std::ostream& operator<<(std::ostream& out, HitRecord& rec) {
+    return out << "HitRecord("
+               << "p=" << rec.p << ", "
+               << "normal=" << rec.normal << ", "
+               << "t=" << rec.t << ", "
+               << "front_face=" << rec.front_face << ")";
+    return out;
+}

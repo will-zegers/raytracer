@@ -15,7 +15,13 @@ class Ray {
             return origin_ + t*direction_;
         }
 
+        friend inline std::ostream& operator<<(std::ostream&, const Ray&);
+
     private:
         Point3 origin_;
         Vec3 direction_;
 };
+
+inline std::ostream& operator<<(std::ostream& out, const Ray& r) {
+    return out << "Ray(" << r.origin_ << ", " << r.direction_ << ")";
+}
