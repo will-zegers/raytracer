@@ -56,10 +56,28 @@ TEST_CASE("basic color operations", "[color]") {
     }
 
     SECTION("writing out a color's rgb components") {
-        auto expected = std::string("63 127 191\n");
         std::ostringstream out;
-        WriteColor(out, c1);
 
-        REQUIRE(expected.compare(out.str()) == 0);
+        SECTION("sample size 1") {
+            auto sample_size = 1;
+
+            Color c5(sample_size*r1, sample_size*g1, sample_size*b1);
+            WriteColor(out, c5, sample_size);
+        }
+
+        SECTION("sample size 100") {
+            auto sample_size = 100;
+
+            Color c6(sample_size*r1, sample_size*g1, sample_size*b1);
+            WriteColor(out, c6, sample_size);
+        }
+
+        int r, g, b;
+        std::istringstream is(out.str());
+        is >> r >> g >> b;
+
+        REQUIRE(r == 64);
+        REQUIRE(g == 128);
+        REQUIRE(b == 192);
     }
 }

@@ -2,7 +2,9 @@
 #include <iostream>
 #include <limits>
 #include <memory>
+#include <random>
 
+#include "raytracer/camera.h"
 #include "raytracer/color.h"
 #include "raytracer/hittable_list.h"
 #include "raytracer/ray.h"
@@ -10,6 +12,12 @@
 #include "raytracer/vec3.h"
 
 const double kInfinity = std::numeric_limits<double>::infinity();
+
+inline double RandomDouble() {
+    static std::uniform_real_distribution<double> distribution(0.0, 1.0);
+    static std::mt19937 generator;
+    return distribution(generator);
+}
 
 Color RayColor(const Ray& r, const Hittable& world) {
     HitRecord rec;
@@ -26,16 +34,13 @@ int main() {
     const auto kAspectRatio = 16.0 / 9.0;
     const int kImageWidth = 400;
     const int kImageHeight = static_cast<int>(kImageWidth / kAspectRatio);
+    const int kSamplesPerPixel = 40;
 
     // Camera
-    const auto kViewPortHeight = 2.0;
-    const auto kViewPortWidth = kAspectRatio * kViewPortHeight;
-    const auto kFocalLength = 1.0;
-
-    const auto kOrigin = Point3(0, 0, 0);
-    const auto kHorizontal = Vec3(kViewPortWidth, 0, 0);
-    const auto kVertical = Vec3(0, kViewPortHeight, 0);
-    const auto kLowerLeftCorner = kOrigin - kHorizontal/2 - kVertical/2 - Vec3(0, 0, kFocalLength);
+    const auto origin = Point3(0.0, 0.0, 0.0);
+    const auto viewport_height = 2.0;
+    const auto focal_length = 1.0;
+    const Camera cam(origin, kAspectRatio, viewport_height, focal_length);
 
     // World
     HittableList world;
@@ -48,11 +53,14 @@ int main() {
     for (int j = kImageHeight-1; j >= 0; --j) {
         std::cerr << "\rScanlines remaining: " << j << ' ' << std::flush;
         for (int i = 0; i < kImageWidth; ++i) {
-            auto u = double(i) / (kImageWidth - 1);
-            auto v = double(j) / (kImageHeight - 1);
-            Ray r(kOrigin, kLowerLeftCorner + u*kHorizontal + v*kVertical - kOrigin);
-            Color pixel_color = RayColor(r, world);
-            WriteColor(std::cout, pixel_color);
+            Color pixel_color(0.0, 0.0, 0.0);
+            for (int s = 0; s < kSamplesPerPixel; ++s) {
+                auto u = (i + RandomDouble()) / (kImageWidth - 1);
+                auto v = (j + RandomDouble())/ (kImageHeight - 1);
+                auto r = cam.get_ray(u, v);
+                pixel_color += RayColor(r, world);
+            }
+            WriteColor(std::cout, pixel_color, kSamplesPerPixel);
         }
     }
 

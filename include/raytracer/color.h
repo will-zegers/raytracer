@@ -17,15 +17,35 @@ class Color {
         friend inline Color operator+(const Vec3&, const Color&);
         friend inline Color operator*(double, const Color&);
 
+        Color& operator+=(const Color& c) {
+            e[0] += c.r();
+            e[1] += c.g();
+            e[2] += c.b();
+            return *this;
+        }
+
     private:
-        const double e[3];
+        double e[3];
 };
 
-void WriteColor(std::ostream &out, Color pixel_Color) {
+inline double clamp(double x, double min, double max) {
+    if (x < min) { return min; }
+    if (x > max) { return max; }
+    return x;
+}
+
+void WriteColor(std::ostream &out, Color pixel_color, int samples_per_pixel) {
+    auto scale = 1.0 / samples_per_pixel;
+
+    // Divide the color by the number of samples.
+    auto r = pixel_color.r()*scale;
+    auto g = pixel_color.g()*scale;
+    auto b = pixel_color.b()*scale;
+
     // Write the translated [0,255] value of each Color component.
-    out << static_cast<int>(255.999 * pixel_Color.r()) << ' '
-        << static_cast<int>(255.999 * pixel_Color.g()) << ' '
-        << static_cast<int>(255.999 * pixel_Color.b()) << '\n';
+    out << static_cast<int>(256 * clamp(r, 0.0, 0.999)) << ' '
+        << static_cast<int>(256 * clamp(g, 0.0, 0.999)) << ' '
+        << static_cast<int>(256 * clamp(b, 0.0, 0.999)) << '\n';
 }
 
 inline Color operator+(const Color& c1, const Color& c2) {
