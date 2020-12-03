@@ -76,8 +76,8 @@ TEST_CASE("basic color operations", "[color]") {
         std::istringstream is(out.str());
         is >> r >> g >> b;
 
-        REQUIRE(r == 64);
-        REQUIRE(g == 128);
-        REQUIRE(b == 192);
+        CHECK(r == 128);
+        CHECK(g == 181);
+        CHECK(b == 221);
     }
 }

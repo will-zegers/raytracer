@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cmath>
 #include <iostream>
 
 #include "raytracer/vec3.h"
@@ -38,9 +39,9 @@ void WriteColor(std::ostream &out, Color pixel_color, int samples_per_pixel) {
     auto scale = 1.0 / samples_per_pixel;
 
     // Divide the color by the number of samples.
-    auto r = pixel_color.r()*scale;
-    auto g = pixel_color.g()*scale;
-    auto b = pixel_color.b()*scale;
+    auto r = sqrt(pixel_color.r()*scale);
+    auto g = sqrt(pixel_color.g()*scale);
+    auto b = sqrt(pixel_color.b()*scale);
 
     // Write the translated [0,255] value of each Color component.
     out << static_cast<int>(256 * clamp(r, 0.0, 0.999)) << ' '
