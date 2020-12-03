@@ -1,4 +1,4 @@
-#include "raytracer/vec.h"
+#include "raytracer/vec3.h"
 
 Vec3 RandomInUnitSphere() {
     while(true) {

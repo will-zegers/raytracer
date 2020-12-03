@@ -1,28 +1,39 @@
 #include <cmath>
 #include <iostream>
-#include <limits>
 #include <memory>
-#include <random>
 
 #include "raytracer/camera.h"
 #include "raytracer/color.h"
 #include "raytracer/hittable_list.h"
 #include "raytracer/ray.h"
 #include "raytracer/sphere.h"
+#include "raytracer/util.h"
 #include "raytracer/vec3.h"
 
-const double kInfinity = std::numeric_limits<double>::infinity();
+enum DiffuseMethod {
+    kWeekendRT,
+    kLambertian,
+    kLambertianAlt,
+};
 
-inline double RandomDouble() {
-    static std::uniform_real_distribution<double> distribution(0.0, 1.0);
-    static std::mt19937 generator;
-    return distribution(generator);
-}
-
-Color RayColor(const Ray& r, const Hittable& world) {
+Color RayColor(const Ray& r, const Hittable& world, int depth, DiffuseMethod method) {
+    if (depth <= 0) { return Color(0, 0, 0); }
     HitRecord rec;
-    if (world.Hit(r, 0, kInfinity, rec)) {
-        return 0.5 * (rec.normal + Color(1, 1, 1));
+    if (world.Hit(r, 0.001, kInfinity, rec)) {
+        Vec3 scatter;
+        switch(method) {
+            case kWeekendRT:
+                scatter = RandomInUnitSphere();
+                break;
+            case kLambertian:
+                scatter = RandomUnitVector();
+                break;
+            case kLambertianAlt:
+                scatter = RandomInHemisphere(rec.normal);
+                break;
+        }
+        Point3 target = rec.p + rec.normal + scatter;
+        return 0.5 * RayColor(Ray(rec.p, target-rec.p), world, depth-1, method);
     }
     Vec3 unit_direction = UnitVector(r.direction());
     auto t = 0.5 * (unit_direction.y() + 1.0);
@@ -32,9 +43,10 @@ Color RayColor(const Ray& r, const Hittable& world) {
 int main() {
     // Image
     const auto kAspectRatio = 16.0 / 9.0;
-    const int kImageWidth = 400;
+    const int kImageWidth = 1080;
     const int kImageHeight = static_cast<int>(kImageWidth / kAspectRatio);
-    const int kSamplesPerPixel = 40;
+    const int kSamplesPerPixel = 100;
+    const int kMaxDepth = 50;
 
     // Camera
     const auto origin = Point3(0.0, 0.0, 0.0);
@@ -58,7 +70,7 @@ int main() {
                 auto u = (i + RandomDouble()) / (kImageWidth - 1);
                 auto v = (j + RandomDouble())/ (kImageHeight - 1);
                 auto r = cam.get_ray(u, v);
-                pixel_color += RayColor(r, world);
+                pixel_color += RayColor(r, world, kMaxDepth, kLambertianAlt);
             }
             WriteColor(std::cout, pixel_color, kSamplesPerPixel);
         }

@@ -11,7 +11,7 @@ endif()
 
 set(RAYTRACER_BIN raytracer)
 include_directories(include)
-add_executable(${RAYTRACER_BIN} src/main.cc)
+add_executable(${RAYTRACER_BIN} src/main.cc src/vec3.cc)
 
 add_custom_target(
     image
