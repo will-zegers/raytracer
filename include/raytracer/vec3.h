@@ -3,6 +3,8 @@
 #include <cmath>
 #include <iostream>
 
+#include "raytracer/util.h"
+
 class Vec3 {
     public:
         Vec3() : e{0, 0, 0} {}
@@ -15,7 +17,19 @@ class Vec3 {
         Vec3 operator-() const { return Vec3(-e[0], -e[1], -e[2]); }
 
         double Length() const {
-            return sqrt(lengthSquared());
+            return sqrt(LengthSquared());
+        }
+
+        inline static Vec3 random() {
+            return Vec3(RandomDouble(), RandomDouble(), RandomDouble());
+        }
+
+        inline static Vec3 random(double min, double max) {
+            return Vec3(RandomDouble(min, max), RandomDouble(min, max), RandomDouble(min, max));
+        }
+
+        double LengthSquared() const {
+            return e[0]*e[0] + e[1]*e[1] + e[2]*e[2];
         }
 
         // Vec3 utility friend functions
@@ -26,10 +40,6 @@ class Vec3 {
         friend inline double Dot(const Vec3&, const Vec3&);
 
     private:
-        double lengthSquared() const {
-            return e[0]*e[0] + e[1]*e[1] + e[2]*e[2];
-        }
-
         double e[3];
 }; // class Vec3
 
@@ -64,5 +74,9 @@ inline double Dot(const Vec3 &u, const Vec3 &v) {
 inline Vec3 UnitVector(Vec3 v) {
     return v / v.Length();
 }
+
+Vec3 RandomInUnitSphere();
+Vec3 RandomUnitVector();
+Vec3 RandomInHemisphere(const Vec3&);
 
 using Point3 = Vec3;
