@@ -4,6 +4,7 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include "raytracer/hittable.h"
+#include "raytracer/material.h"
 #include "raytracer/ray.h"
 #include "raytracer/sphere.h"
 #include "raytracer/vec3.h"
@@ -13,7 +14,8 @@
 TEST_CASE("test sphere", "[sphere]") {
     auto center = Vec3(0.0, 0.0, -1.0);
     auto radius = 0.5;
-    Sphere s(center, radius);
+    auto material = std::make_shared<Lambertian>(Color(1.0, 1.0, 1.0));
+    Sphere s(center, radius, material);
 
     auto t_min = 0.0;
     auto t_max = std::numeric_limits<double>::infinity();

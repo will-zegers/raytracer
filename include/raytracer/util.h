@@ -4,6 +4,7 @@
 #include <random>
 
 const double kInfinity = std::numeric_limits<double>::infinity();
+const double kEpsilon = 100*std::numeric_limits<double>::epsilon();
 
 inline double RandomDouble() {
     static std::uniform_real_distribution<double> distribution(0.0, 1.0);

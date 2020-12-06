@@ -5,35 +5,21 @@
 #include "raytracer/camera.h"
 #include "raytracer/color.h"
 #include "raytracer/hittable_list.h"
+#include "raytracer/material.h"
 #include "raytracer/ray.h"
 #include "raytracer/sphere.h"
 #include "raytracer/util.h"
 #include "raytracer/vec3.h"
 
-enum DiffuseMethod {
-    kWeekendRT,
-    kLambertian,
-    kLambertianAlt,
-};
-
-Color RayColor(const Ray& r, const Hittable& world, int depth, DiffuseMethod method) {
+Color RayColor(const Ray& r, const Hittable& world, int depth) {
     if (depth <= 0) { return Color(0, 0, 0); }
     HitRecord rec;
     if (world.Hit(r, 0.001, kInfinity, rec)) {
-        Vec3 scatter;
-        switch(method) {
-            case kWeekendRT:
-                scatter = RandomInUnitSphere();
-                break;
-            case kLambertian:
-                scatter = RandomUnitVector();
-                break;
-            case kLambertianAlt:
-                scatter = RandomInHemisphere(rec.normal);
-                break;
+        Ray scattered;
+        Color attenuation;
+        if (rec.mat_ptr->Scatter(r, rec, attenuation, scattered)) {
+            return attenuation * RayColor(scattered, world, depth - 1);
         }
-        Point3 target = rec.p + rec.normal + scatter;
-        return 0.5 * RayColor(Ray(rec.p, target-rec.p), world, depth-1, method);
     }
     Vec3 unit_direction = UnitVector(r.direction());
     auto t = 0.5 * (unit_direction.y() + 1.0);
@@ -43,9 +29,9 @@ Color RayColor(const Ray& r, const Hittable& world, int depth, DiffuseMethod met
 int main() {
     // Image
     const auto kAspectRatio = 16.0 / 9.0;
-    const int kImageWidth = 1080;
+    const int kImageWidth = 400;
     const int kImageHeight = static_cast<int>(kImageWidth / kAspectRatio);
-    const int kSamplesPerPixel = 100;
+    const int kSamplesPerPixel = 150;
     const int kMaxDepth = 50;
 
     // Camera
@@ -56,21 +42,28 @@ int main() {
 
     // World
     HittableList world;
-    world.Add(std::make_shared<Sphere>(Point3(0, 0, -1), 0.5));
-    world.Add(std::make_shared<Sphere>(Point3(0, -100.5, -1), 100));
+    auto material_ground = std::make_shared<Lambertian>(Color(0.8, 0.8, 0.8));
+    auto material_center = std::make_shared<Lambertian>(Color(0.2, 0.2, 0.8));
+    auto material_left = std::make_shared<Metal>(Color(0.8, 0.8, 0.8), 0.05);
+    auto material_right = std::make_shared<Metal>(Color(1.0, 0.0, 0.0), 0.15);
+
+    world.Add(std::make_shared<Sphere>(Point3( 0.0, -100.5, -1.0), 100.0, material_ground));
+    world.Add(std::make_shared<Sphere>(Point3( 0.0,    0.0, -1.0),   0.5, material_center));
+    world.Add(std::make_shared<Sphere>(Point3(-1.0,    0.0, -1.0),   0.5, material_left));
+    world.Add(std::make_shared<Sphere>(Point3( 1.0,    0.0, -1.0),   0.5, material_right));
 
     // Render
     std::cout << "P3\n" << kImageWidth << ' ' << kImageHeight << "\n255\n";
 
     for (int j = kImageHeight-1; j >= 0; --j) {
-        std::cerr << "\rScanlines remaining: " << j << ' ' << std::flush;
+        std::cerr << "\rPercent complete: " << 100*(1.0 - j/double(kImageHeight)) << "% " << std::flush;
         for (int i = 0; i < kImageWidth; ++i) {
             Color pixel_color(0.0, 0.0, 0.0);
             for (int s = 0; s < kSamplesPerPixel; ++s) {
                 auto u = (i + RandomDouble()) / (kImageWidth - 1);
                 auto v = (j + RandomDouble())/ (kImageHeight - 1);
                 auto r = cam.get_ray(u, v);
-                pixel_color += RayColor(r, world, kMaxDepth, kLambertianAlt);
+                pixel_color += RayColor(r, world, kMaxDepth);
             }
             WriteColor(std::cout, pixel_color, kSamplesPerPixel);
         }
