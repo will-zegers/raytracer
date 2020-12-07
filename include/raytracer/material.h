@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cmath>
+
 #include "raytracer/color.h"
 #include "raytracer/ray.h"
 
@@ -29,4 +31,20 @@ class Metal : public Material {
     private:
         Color albedo_;
         double fuzz_;
+};
+
+class Dialectric : public Material {
+    public:
+        Dialectric(double index_of_refraction) : ir_(index_of_refraction) {}
+
+        virtual bool Scatter(const Ray&, const HitRecord&, Color&, Ray&) const override;
+    private:
+        static double Reflectance(double cosine, double ref_idx) {
+            // Use Schlick's approximation for refectance
+            auto r0 = (1 - ref_idx) / (1 + ref_idx);
+            auto r0_sq = r0 * r0;
+            return r0_sq + (1 - r0_sq)*pow((1 - cosine), 5);
+        }
+
+        double ir_;
 };

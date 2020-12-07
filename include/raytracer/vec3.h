@@ -86,5 +86,6 @@ Vec3 RandomInUnitSphere();
 Vec3 RandomUnitVector();
 Vec3 RandomInHemisphere(const Vec3&);
 Vec3 Reflect(const Vec3&, const Vec3&);
+Vec3 Refract(const Vec3&, const Vec3&, double);
 
 using Point3 = Vec3;
