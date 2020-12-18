@@ -30,7 +30,7 @@ bool Metal::Scatter(const Ray& r_in, const HitRecord& rec, Color& attenuation,
     return (Dot(scattered.direction(), rec.normal) > 0.0);
 }
 
-bool Dialectric::Scatter(const Ray& r_in, const HitRecord& rec, Color& attenuation,
+bool Dielectric::Scatter(const Ray& r_in, const HitRecord& rec, Color& attenuation,
                          Ray& scattered) const {
     attenuation = Color(1.0, 1.0, 1.0);
     double refraction_ratio = rec.front_face ? (1.0 / ir_) : ir_;

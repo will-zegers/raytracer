@@ -33,9 +33,9 @@ class Metal : public Material {
         double fuzz_;
 };
 
-class Dialectric : public Material {
+class Dielectric : public Material {
     public:
-        Dialectric(double index_of_refraction) : ir_(index_of_refraction) {}
+        Dielectric(double index_of_refraction) : ir_(index_of_refraction) {}
 
         virtual bool Scatter(const Ray&, const HitRecord&, Color&, Ray&) const override;
     private:

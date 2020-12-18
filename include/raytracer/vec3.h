@@ -40,6 +40,7 @@ class Vec3 {
         friend inline Vec3 operator-(const Vec3&, const Vec3&);
         friend inline Vec3 operator*(const Vec3&, const Vec3&);
         friend inline Vec3 operator*(double, const Vec3&);
+        friend inline Vec3 Cross(const Vec3&, const Vec3&);
         friend inline double Dot(const Vec3&, const Vec3&);
 
     private:
@@ -66,6 +67,16 @@ inline Vec3 operator*(double t, const Vec3 &v) {
     return Vec3(t*v.e[0], t*v.e[1], t*v.e[2]);
 }
 
+inline Vec3 Cross(const Vec3& u, const Vec3& v) {
+    return Vec3(u.e[1]*v.e[2] - u.e[2]*v.e[1],
+                u.e[2]*v.e[0] - u.e[0]*v.e[2],
+                u.e[0]*v.e[1] - u.e[1]*v.e[0]);
+}
+
+inline double Dot(const Vec3 &u, const Vec3 &v) {
+    return u.e[0]*v.e[0] + u.e[1]*v.e[1] + u.e[2]*v.e[2];
+}
+
 inline Vec3 operator*(const Vec3 &v, double t) {
     return t * v;
 }
@@ -74,17 +85,14 @@ inline Vec3 operator/(const Vec3 &v, double t) {
     return (1/t) * v;
 }
 
-inline double Dot(const Vec3 &u, const Vec3 &v) {
-    return u.e[0]*v.e[0] + u.e[1]*v.e[1] + u.e[2]*v.e[2];
-}
-
 inline Vec3 UnitVector(const Vec3 &v) {
     return v / v.Length();
 }
 
+Vec3 RandomInHemisphere(const Vec3&);
+Vec3 RandomInUnitDisk();
 Vec3 RandomInUnitSphere();
 Vec3 RandomUnitVector();
-Vec3 RandomInHemisphere(const Vec3&);
 Vec3 Reflect(const Vec3&, const Vec3&);
 Vec3 Refract(const Vec3&, const Vec3&, double);
 

@@ -14,6 +14,14 @@ class Color {
         double g() const { return e[1]; }
         double b() const { return e[2]; }
 
+        inline static Color Random(double min, double max) {
+            return Color(RandomDouble(min, max), RandomDouble(min, max), RandomDouble(min, max));
+        }
+
+        inline static Color Random() {
+            return Color::Random(0.0, 1.0);
+        }
+
         friend inline Color operator+(const Color&, const Color&);
         friend inline Color operator+(const Color&, const Vec3&);
         friend inline Color operator+(const Vec3&, const Color&);
